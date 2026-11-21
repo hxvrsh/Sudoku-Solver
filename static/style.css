@@ -1,0 +1,392 @@
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/*Theme Colours*/
+
+:root {
+    color-scheme: light;
+
+    --page-bg: #f4f4f4;
+    --text: #222;
+
+    --grid-border: #222;
+    --cell-bg: #fff;
+    --cell-border: #999;
+
+    --solver-number: #2563eb;
+
+    --button-bg: #222;
+    --button-hover: #444;
+    --secondary-button: #666;
+
+    --input-focus: #e8f0ff;
+    --selected-bg: #fff3cd;
+    --selected-outline: #f0ad4e;
+
+    --select-bg: #fff;
+    --select-border: #aaa;
+}
+
+/* Dark Theme */
+
+[data-theme="dark"] {
+    color-scheme: dark;
+
+    --page-bg: #121820;
+    --text: #e5e7eb;
+
+    --grid-border: #64748b;
+    --cell-bg: #1e293b;
+    --cell-border: #475569;
+
+    --solver-number: #60a5fa;
+
+    --button-bg: #334155;
+    --button-hover: #475569;
+    --secondary-button: #475569;
+
+    --input-focus: #334b70;
+    --selected-bg: #59491f;
+    --selected-outline: #eab308;
+
+    --select-bg: #1e293b;
+    --select-border: #475569;
+}
+
+
+/*Body*/
+
+body {
+    font-family: Arial, sans-serif;
+
+    background: var(--page-bg);
+    color: var(--text);
+
+    min-height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 40px 20px;
+
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+
+h1 {
+    margin-bottom: 30px;
+    font-size: 32px;
+}
+
+
+/*Sudoku Grid*/
+
+.sudoku-grid {
+    display: grid;
+
+    grid-template-columns: repeat(9, 50px);
+    grid-template-rows: repeat(9, 50px);
+
+    border: 3px solid var(--grid-border);
+}
+
+
+.sudoku-cell {
+    width: 50px;
+    height: 50px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid var(--cell-border);
+
+    background: var(--cell-bg);
+    color: var(--text);
+
+    font-size: 22px;
+    font-weight: 500;
+}
+
+
+/*Original numbers*/
+
+.original-cell {
+    font-weight: bold;
+}
+
+
+/* Numbers added by the solver */
+
+.solved-cell {
+    color: var(--solver-number);
+}
+
+
+/*3x3 Sudoku Borders*/
+
+/* Right border after columns 3, 6 and 9 */
+
+.sudoku-grid > :nth-child(3n) {
+    border-right: 3px solid var(--grid-border);
+}
+
+
+/* Bottom border after rows 3 and 6 */
+
+.sudoku-grid > :nth-child(n+19):nth-child(-n+27),
+.sudoku-grid > :nth-child(n+46):nth-child(-n+54) {
+    border-bottom: 3px solid var(--grid-border);
+}
+
+
+/* Animation */
+
+.solved-cell.revealed {
+    animation: revealNumber 0.25s ease;
+}
+
+
+@keyframes revealNumber {
+
+    0% {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+.solved-cell.backtracked {
+    animation: backtrackNumber 0.25s ease;
+}
+
+
+@keyframes backtrackNumber {
+
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+}
+
+
+/*Controls*/
+
+.animation-controls {
+    margin-top: 20px;
+}
+
+
+button {
+    margin-top: 20px;
+
+    padding: 12px 28px;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    border: none;
+    border-radius: 6px;
+
+    background: var(--button-bg);
+    color: white;
+
+    cursor: pointer;
+
+    transition: background 0.2s ease;
+}
+
+
+button:hover {
+    background: var(--button-hover);
+}
+
+
+button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+
+/* Solver Selection */
+
+.solver-selection {
+    margin-top: 25px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.solver-selection label {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+
+.solver-selection select {
+    padding: 9px 12px;
+
+    font-size: 15px;
+
+    border: 1px solid var(--select-border);
+    border-radius: 6px;
+
+    background: var(--select-bg);
+    color: var(--text);
+
+    cursor: pointer;
+}
+
+
+/* Result Information */
+
+.result-info {
+    margin-top: 25px;
+
+    text-align: center;
+
+    line-height: 1.8;
+}
+
+
+/* Secondary Button */
+
+.secondary-button {
+    background: var(--secondary-button);
+}
+
+
+.secondary-button:hover {
+    background: var(--button-hover);
+}
+
+
+/* Input Page */
+
+.sudoku-grid input {
+    width: 50px;
+    height: 50px;
+
+    border: 1px solid var(--cell-border);
+
+    text-align: center;
+
+    font-size: 22px;
+    font-weight: 500;
+
+    outline: none;
+
+    background: var(--cell-bg);
+    color: var(--text);
+}
+
+
+.sudoku-grid input:focus {
+    background: var(--input-focus);
+}
+
+
+/* Remove number input arrows */
+
+.sudoku-grid input::-webkit-inner-spin-button,
+.sudoku-grid input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+
+/* Selected Cell */
+
+.selected-cell {
+    background: var(--selected-bg);
+
+    box-shadow: inset 0 0 0 3px var(--selected-outline);
+}
+/* Sudoku Grid + Number Pad */
+
+.input-layout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 25px;
+}
+
+/* Number Pad */
+
+.number-pad {
+    display: grid;
+    grid-template-columns: repeat(3, 50px);
+    gap: 8px;
+
+    background: var(--cell-bg);
+    padding: 10px;
+    border: 1px solid var(--cell-border);
+    border-radius: 8px;
+}
+
+.number-pad button {
+    width: 50px;
+    height: 50px;
+
+    margin: 0;
+    padding: 0;
+
+    border: 1px solid var(--cell-border);
+    border-radius: 6px;
+
+    font-size: 20px;
+    font-weight: 600;
+
+    background: var(--input-focus);
+    color: var(--text);
+}
+
+.number-pad button:hover {
+    background: var(--selected-bg);
+}
+
+/* Erase Button */
+
+.erase-button {
+    grid-column: span 3;
+    width: 100% !important;
+
+    background: var(--secondary-button) !important;
+    color: white !important;
+}
+
+.erase-button:hover {
+    background: var(--button-hover) !important;
+}
+
+/*Theme Toggle*/
+
+.theme-toggle {
+    position: fixed;
+    top: 18px;
+    right: 20px;
+
+    margin: 0;
+    padding: 10px 16px;
+
+    font-size: 14px;
+    border-radius: 8px;
+}

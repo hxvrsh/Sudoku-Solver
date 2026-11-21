@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sudoku Result</title>
+    <script>
+    const savedTheme = localStorage.getItem("sudoku-theme") || "light";
+    document.documentElement.setAttribute("data-theme", savedTheme);
+    </script>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="{{ url_for('static', filename='theme.js') }}" defer></script>
+</head>
+
+<body>
+    <button type="button" id="themeToggle" class="theme-toggle">
+    ☾ Dark mode
+    </button>
+    <h1>Sudoku Result</h1>
+
+    <div class="sudoku-grid" id="sudokuGrid">
+
+        {% for row in range(9) %}
+            {% for col in range(9) %}
+
+                <div
+                    class="sudoku-cell
+                    {% if original_board[row][col] != 0 %}
+                        original-cell
+                    {% else %}
+                        solved-cell
+                    {% endif %}"
+                    data-row="{{ row }}"
+                    data-col="{{ col }}"
+                >
+                    {% if original_board[row][col] != 0 %}
+                        {{ original_board[row][col] }}
+                    {% endif %}
+                </div>
+
+            {% endfor %}
+        {% endfor %}
+
+    </div>
+
+    <div class="animation-controls">
+        <button type="button" id="skipButton">
+            Skip Animation
+        </button>
+    </div>
+
+    <div class="result-info">
+
+        <p>
+            <strong>Solver:</strong> {{ solver }}
+        </p>
+
+        <p>
+            <strong>Nodes explored:</strong> {{ result.nodes }}
+        </p>
+
+        {% if result.solutions is defined %}
+            <p>
+                <strong>Solutions found:</strong> {{ result.solutions }}
+            </p>
+        {% else %}
+            <p>
+                <strong>Solved:</strong> {{ result.solved }}
+            </p>
+        {% endif %}
+
+    </div>
+
+
+<script id="solver-data" type="application/json">
+    {
+        "moves": {{ result.moves | tojson }},
+        "board": {{ result.board | tojson }}
+    }
+</script>
+
+
+    <form action="/solve" method="POST">
+
+        {% for row in range(9) %}
+            {% for col in range(9) %}
+
+                <input
+                    type="hidden"
+                    name="cell_{{ row }}_{{ col }}"
+                    value="{{ original_board[row][col] }}"
+                >
+
+            {% endfor %}
+        {% endfor %}
+
+        <div class="solver-selection">
+
+            <label for="solver">
+                Try another solver:
+            </label>
+
+            <select name="solver" id="solver">
+
+                <option value="basic"
+                    {% if solver == "basic" %}selected{% endif %}>
+                    Basic Backtracking
+                </option>
+
+                <option value="mrv"
+                    {% if solver == "mrv" %}selected{% endif %}>
+                    MRV
+                </option>
+
+                <option value="mrv_incr"
+                    {% if solver == "mrv_incr" %}selected{% endif %}>
+                    MRV + Incremental Tracking + LCV
+                </option>
+
+                <option value="advanced"
+                    {% if solver == "advanced" %}selected{% endif %}>
+                    Human Techniques + MRV
+                </option>
+
+            </select>
+
+        </div>
+
+        <button type="submit">
+            Try This Solver
+        </button>
+
+    </form>
+
+
+    <form action="/" method="GET">
+
+        <button type="submit" class="secondary-button">
+            Solve Another Sudoku
+        </button>
+
+    </form>
+
+
+    <script src="/static/script.js"></script>
+
+</body>
+</html>

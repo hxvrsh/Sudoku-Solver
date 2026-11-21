@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sudoku Solver</title>
+
+    <script>
+        const savedTheme = localStorage.getItem("sudoku-theme") || "light";
+        document.documentElement.setAttribute("data-theme", savedTheme);
+    </script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='theme.js') }}" defer></script>
+</head>
+
+<body>
+
+    <button type="button" id="themeToggle" class="theme-toggle">
+        ☾ Dark mode
+    </button>
+
+    <h1>Sudoku Solver</h1>
+
+    <form action="/solve" method="POST">
+
+        <!-- Sudoku Grid + Number Pad -->
+        <div class="input-layout">
+
+            <div class="sudoku-grid">
+
+                {% for row in range(9) %}
+                    {% for col in range(9) %}
+
+                        <input
+                            type="number"
+                            name="cell_{{ row }}_{{ col }}"
+                            min="1"
+                            max="9"
+                        >
+
+                    {% endfor %}
+                {% endfor %}
+
+            </div>
+
+            <div class="number-pad">
+
+                {% for num in range(1, 10) %}
+
+                    <button
+                        type="button"
+                        class="number-button"
+                        data-number="{{ num }}"
+                    >
+                        {{ num }}
+                    </button>
+
+                {% endfor %}
+
+                <button
+                    type="button"
+                    id="eraseButton"
+                    class="erase-button"
+                >
+                    Erase
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="solver-selection">
+
+            <label for="solver">Choose Solver:</label>
+
+            <select name="solver" id="solver">
+
+                <option value="basic">
+                    Basic Backtracking
+                </option>
+
+                <option value="mrv">
+                    MRV
+                </option>
+
+                <option value="mrv_incr">
+                    MRV + Incremental Tracking + LCV
+                </option>
+
+                <option value="advanced">
+                    Human Techniques + MRV
+                </option>
+
+            </select>
+
+        </div>
+
+        <button type="submit">
+            Solve Sudoku
+        </button>
+
+    </form>
+
+    <script src="{{ url_for('static', filename='input.js') }}"></script>
+
+</body>
+
+</html>
